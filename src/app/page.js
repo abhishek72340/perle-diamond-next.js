@@ -7,11 +7,12 @@ import JoinCommunity from "../components/JoinCommunity";
 import TestimonialsCarousel from "../components/TestimonialsCarousel";
 import ClassicRingsGallery from "../components/productListing/ClassicRingsGallery";
 import SignatureRingsGallery from "../components/productListing/SignatureRingsGallery";
-import GemstoneRingsGallery from "../components/productListing/GemstoneRingsGallery"; // This component is not used in the current page
-
+import GemstoneRingsGallery from "../components/productListing/GemstoneRingsGallery";
+import HeroBannerContent from "../components/HerobannerContent";
 export default function Home() {
   return (
     <main>
+      <HeroBannerContent />
       <ClassicRingsGallery />
       <CoreCollection />
       <SignatureRingsGallery />
