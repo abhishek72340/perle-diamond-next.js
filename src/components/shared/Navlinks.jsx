@@ -12,8 +12,7 @@ export default function NavLinks({ scrolled }) {
   return (
     <nav
       aria-label='Primary Navigation'
-      className='hidden lg:flex gap-5 justify-center mt-4'
-      style={{ marginTop: "2rem" }}
+      className='hidden lg:flex gap-5 justify-center mt-8'
     >
       {NAV_LINKS.map((label) => (
         <a

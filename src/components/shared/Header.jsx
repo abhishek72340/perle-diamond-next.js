@@ -41,6 +41,7 @@ export default function HeroWithHeader() {
       <header
         ref={headerRef}
         className={`
+          py-[25px] px-[16px]
           fixed inset-x-0 top-6 z-20
           transition-colors duration-300
           ${
@@ -49,7 +50,7 @@ export default function HeroWithHeader() {
               : "bg-transparent text-white"
           }
         `}
-        style={{ padding: "25px 16px" }}
+    
       >
         <div className='flex items-center justify-between'>
           <button aria-label='Open menu'>
@@ -58,8 +59,7 @@ export default function HeroWithHeader() {
 
           <a href='#' aria-label='Go to homepage'>
             <h1
-              className='absolute left-1/2 transform -translate-x-1/2 text-xl font-sans font-bold tracking-wider'
-              style={{ marginTop: "-10px" }}
+              className='absolute left-1/2 transform -translate-x-1/2 text-xl font-sans font-bold tracking-wider -mt-[10px]'
             >
               SERGE DENIMES
             </h1>

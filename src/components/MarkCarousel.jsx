@@ -52,7 +52,9 @@ export default function MarksCarousel() {
     if (!container || container.dataset.cloned === "true") return;
 
     const children = Array.from(container.children);
-    children.forEach((child) => container.insertBefore(child.cloneNode(true), container.firstChild));
+    children.forEach((child) =>
+      container.insertBefore(child.cloneNode(true), container.firstChild)
+    );
     children.forEach((child) => container.appendChild(child.cloneNode(true)));
 
     container.dataset.cloned = "true";
@@ -85,40 +87,33 @@ export default function MarksCarousel() {
 
   return (
     <section
-      role="region"
-      aria-label="Carousel of brand highlights"
-      className="relative overflow-hidden my-[6%] mx-[5%]"
-      style={{ margin: "6% 5% 5% 2%" }}
+      role='region'
+      aria-label='Carousel of brand highlights'
+      className='relative overflow-hidden mt-[6%] mr-[5%] mb-[5%] ml-[2%]'
     >
       <div
         ref={containerRef}
-        role="list"
-        aria-live="off"
-        className="flex gap-[3rem] items-start whitespace-nowrap select-none overflow-x-auto"
-        style={{
-          padding: "1px",
-          cursor: "grab",
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-        }}
+        role='list'
+        aria-live='off'
+        className='flex gap-[3rem] items-start whitespace-nowrap select-none overflow-x-auto p-[1px] cursor-grab no-scrollbar'
       >
         {marks?.map((mark, idx) => (
           <div
             key={idx}
-            role="listitem"
+            role='listitem'
             tabIndex={0}
-            aria-roledescription="slide"
-            aria-label={`${mark.title}: ${mark.description}`}
-            className="inline-flex gap-4 items-center flex-shrink-0 mx-[5px] my-[10px] focus:outline-none"
+            aria-roledescription='slide'
+            aria-label={`${mark?.title}: ${mark?.description}`}
+            className='inline-flex gap-4 items-center flex-shrink-0 mx-[5px] my-[10px] focus:outline-none'
           >
-            <div className="mb-4">{mark.Icon}</div>
-            <div className="flex flex-col gap-1 text-xs">
-              <h3 className="font-semibold m-0">{mark.title}</h3>
-              <p className="text-dark m-0">{mark.description}</p>
+            <div className='mb-4'>{mark?.Icon}</div>
+            <div className='flex flex-col gap-1 text-xs'>
+              <h3 className='font-semibold m-0'>{mark?.title}</h3>
+              <p className='text-dark m-0'>{mark?.description}</p>
               <a
-                href="#"
-                className="underline font-medium"
-                aria-label={`Learn more about ${mark.title}`}
+                href='#'
+                className='underline font-medium'
+                aria-label={`Learn more about ${mark?.title}`}
               >
                 Learn More
               </a>
@@ -128,8 +123,8 @@ export default function MarksCarousel() {
       </div>
 
       {/* Left and right fade edges */}
-      <div className="absolute inset-y-0 left-0 w-[80px] pointer-events-none bg-gradient-to-r from-white to-transparent" />
-      <div className="absolute inset-y-0 right-0 w-[80px] pointer-events-none bg-gradient-to-l from-white to-transparent" />
+      <div className='absolute inset-y-0 left-0 w-[80px] pointer-events-none bg-gradient-to-r from-white to-transparent' />
+      <div className='absolute inset-y-0 right-0 w-[80px] pointer-events-none bg-gradient-to-l from-white to-transparent' />
     </section>
   );
 }

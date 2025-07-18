@@ -1,6 +1,6 @@
 export default function Video() {
   return (
-    <div className='w-full overflow-hidden' style={{ marginTop: "7rem" }}>
+    <div className='w-full overflow-hidden mt-[7rem]'>
       <video
         className='w-full h-auto object-cover'
         autoPlay

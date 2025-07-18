@@ -10,19 +10,13 @@ export default function CoreCollection() {
         objectFit='cover'
         width={1600}
         height={600}
-        loading="lazy"
+        loading='lazy'
       />
-      <div
-        className='absolute inset-0 flex flex-col items-center justify-end text-center gap-4'
-        style={{ paddingBottom: "40px" }}
-      >
+      <div className='absolute inset-0 flex flex-col items-center justify-end text-center gap-2 pb-[40px]'>
         <h2 className='text-black text-2xl font-medium font-serif mb-4'>
           Core Collection
         </h2>
-        <a
-          className='border border-black text-black text-xs uppercase inline-block'
-          style={{ padding: "12px 20px" }}
-        >
+        <a className='border border-black text-black text-xs uppercase inline-block py-[12px] px-[20px]'>
           Shop Now
         </a>
       </div>
