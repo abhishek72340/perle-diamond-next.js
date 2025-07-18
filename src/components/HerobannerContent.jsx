@@ -11,15 +11,9 @@ export default function HeroBannerContent() {
         priority
       />
 
-      <div
-        className='absolute inset-0 flex flex-col items-center justify-end text-center px-4 gap-5'
-        style={{ paddingBottom: "30px" }}
-      >
+      <div className='absolute inset-0 flex flex-col items-center justify-end text-center px-4 gap-5 pb-[30px]'>
         <h2 className='text-white text-2xl font-serif mb-6'>Modern Rodeo</h2>
-        <a
-          className='inline-block uppercase text-xs border border-white text-white transition hover:bg-white hover:text-black'
-          style={{ padding: "12px 25px" }}
-        >
+        <a className='inline-block uppercase text-xs border py-[12px] px-[25px] border-white text-white transition hover:bg-white hover:text-black'>
           Shop the Collection
         </a>
       </div>

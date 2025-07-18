@@ -4,8 +4,7 @@ import { SiTiktok } from "react-icons/si";
 export default function Footer() {
   return (
     <footer
-      className='w-full bg-[#f3f3f3] border-t border-[#c7c7c7] h-110 '
-      style={{ padding: "5%" }}
+      className='w-full bg-[#f3f3f3] border-t border-[#c7c7c7] h-110 p-[5%]'
     >
       {/* top “columns” row */}
       <div className='text-[black] w-full px-8 py-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-x-10 gap-y-6'>
@@ -123,7 +122,7 @@ export default function Footer() {
       </div>
 
       {/* bottom copyright row */}
-      <div className='w-full px-8 pb-6 text-xs font-medium text-dark' style={{marginTop:'5rem'}}>
+      <div className='w-full px-8 pb-6 text-xs font-medium text-dark my-[5rem]'>
         ©2025 Serge DeNimes. All Rights Reserved.
       </div>
     </footer>

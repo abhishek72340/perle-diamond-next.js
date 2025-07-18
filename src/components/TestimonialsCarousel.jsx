@@ -132,7 +132,7 @@ export default function TestimonialsCarousel() {
   };
   const onTextDragEnd = () => {
     if (!textDragging) return setTextDragging(false);
-    const stepWidth = textContainerWidth / 1; 
+    const stepWidth = textContainerWidth / 1;
     const steps = -Math.round(textDragOffset / stepWidth);
     if (steps) {
       setDurationMs(NORMAL_DURATION);
@@ -149,10 +149,7 @@ export default function TestimonialsCarousel() {
 
   return (
     <div className='flex flex-col items-center justify-center h-[50vh] bg-[#f3f3f3] border-b border-[#c1c1c1] space-y-8'>
-      <div
-        className='flex items-center justify-center w-[50%] gap-[7rem]'
-        style={{ marginTop: "-4rem" }}
-      >
+      <div className='flex items-center justify-center w-[65%] gap-[7rem] my-4'>
         <button onClick={handlePrev} className='p-4 opacity-30 cursor-pointer'>
           <TfiAngleLeft size={30} />
         </button>
@@ -214,9 +211,9 @@ export default function TestimonialsCarousel() {
         onMouseUp={onLogoDragEnd}
         onMouseLeave={onLogoDragEnd}
         onTouchEnd={onLogoDragEnd}
+        className='my-[3rem]'
         style={{
           cursor: logoDragging ? "grabbing" : "grab",
-          marginTop: "3rem",
         }}
       >
         <div

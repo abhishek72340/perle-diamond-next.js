@@ -6,49 +6,25 @@ export default function JoinCommunity() {
     e.target.reset();
   };
   return (
-    <section
-      style={{ marginTop: "3rem", padding: "64px 16px" }}
-      className='bg-white text-center'
-    >
+    <section className='bg-white text-center mt-12 py-16 px-4'>
       <h2 className='font-semibold text-sm md:text-xl lg:text-sm text-dark'>
         JOIN THE COMMUNITY
       </h2>
 
-      <p className='text-xs text-gray-600' style={{ margin: "8px 0 0" }}>
+      <p className='text-xs text-gray-600 mt-[8px]'>
         SIGN UP TO OUR MAILING LIST FOR EXCLUSIVE ACCESS.
       </p>
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          marginTop: "13px",
-          position: "relative",
-          display: "inline-block",
-        }}
-      >
+      <form onSubmit={handleSubmit} className='mt-[13px] relative inline-block'>
         <input
           type='email'
           placeholder='Email'
-          className='bg-[#f3f3f3] text-gray-900 text-sm placeholder-gray-500'
-          style={{
-            padding: "10px 48px 10px 16px",
-            width: "220px",
-            border: "none",
-            outline: "none",
-          }}
+          className='bg-[#f3f3f3] text-gray-900 text-sm placeholder-gray-500 px-[48px] pr-[48px] pl-[16px] py-[10px] w-[220px] border-none outline-none'
           required
         />
         <button
           type='submit'
           className='text-gray-900'
-          style={{
-            position: "absolute",
-            top: "50%",
-            right: 0,
-            transform: "translateY(-50%)",
-            padding: "12px 16px",
-            background: "transparent",
-            border: "none",
-          }}
+          className='absolute top-1/2 right-0 -translate-y-1/2 px-4 py-3 bg-transparent border-none'
         >
           <IoIosArrowRoundForward size={23} />
         </button>
