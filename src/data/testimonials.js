@@ -9,35 +9,38 @@ import High from "../../public/images/testimonial/high.svg";
 export const testimonials = [
   {
     quote:
-      "Serge DeNimes is the trend-centric brand that's revolutionising the landscape of affordable jewellery",
-    author: "GQ",
-    logo: <Image src={LogoGQ} alt='GQ' width={50} height={30} />,
-  },
-  {
-    quote:
-      "The quality never wanes. Continuing to offer 925 silver and high-end, quality jewellery at an alarmingly accessible price point.",
+      "The quality never wanes. Continuing to offer 925 silver and high-end, quality jewellery at an alarmingly accessible price point",
     author: "Clash",
     logo: <Image src={LogoClash} alt='Clash' width={30} height={30} />,
   },
   {
-    quote: "Unrivalled craftsmanship meets forward-thinking design.",
+    quote:
+      "Serge DeNimes has blended the traditionally clear line between fine jewelry and the fast-paced environment of the trend-dominated fashion industry",
+    author: "Culted",
+    logo: <Image src={LogoED} alt='ED' width={70} height={30} />,
+  },
+  {
+    quote:
+      "London-based jewellery label Serge DeNimes creates animated signet rings every time",
     author: "Esquire",
     logo: <Image src={LogoEsquire} alt='Esquire' width={200} height={100} />,
   },
   {
-    quote: "A sublime marriage of tradition & modernity in silver.",
+    quote:
+      "Delivering goods straight out of London, Serge has maintained a strong presence through its frequent themed collections",
+    author: "Highsnobiety",
+    logo: <Image src={High} alt='HIGH SNOBIETY' width={170} height={150} />,
+  },
+  {
+    quote:
+      "Dive into a world where fashion meets emotion and every piece is a journey towards self-expression",
     author: "Fault",
     logo: <Image src={LogoFNG} alt='Fault' width={50} height={30} />,
   },
   {
     quote:
-      "Delivering goods straight out of London, Serge has maintained a strong presence through its frequent themed collections",
-    author: "HIGH SNOBIETY",
-    logo: <Image src={High} alt='HIGH SNOBIETY' width={170} height={150} />,
-  },
-  {
-    quote: "Bold statements carved in shining metal—always on point.",
-    author: "ED",
-    logo: <Image src={LogoED} alt='ED' width={70} height={30} />,
+      "Serge DeNimes is the trend-centric brand that’s revolutionising the landscape of affordable jewellry",
+    author: "GQ",
+    logo: <Image src={LogoGQ} alt='GQ' width={50} height={30} />,
   },
 ];

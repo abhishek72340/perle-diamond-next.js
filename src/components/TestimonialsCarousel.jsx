@@ -1,174 +1,252 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { GrPrevious } from "react-icons/gr";
-import { GrNext } from "react-icons/gr";
-import {testimonials } from "../data/testimonials";
+import { useEffect, useRef, useState } from "react";
+import { TfiAngleLeft, TfiAngleRight } from "react-icons/tfi";
+import { testimonials } from "../data/testimonials";
+
+const VISIBLE_LOGOS = 5;
+const COPIES = 5;
+const FAST_THRESHOLD = 300;
+const FAST_DURATION = 200;
+const NORMAL_DURATION = 700;
 
 export default function TestimonialsCarousel() {
-  // ─── text carousel setup (unchanged) ────────────────────────
-  const textSlides = [
-    testimonials[testimonials.length - 1],
-    ...testimonials,
-    testimonials[0],
-  ];
-  const textCount = textSlides.length;
+  const length = testimonials.length;
+  const textList = Array(COPIES).fill(testimonials).flat();
+  const logoList = Array(COPIES).fill(testimonials).flat();
+  const middleIndex = length * Math.floor(COPIES / 2);
 
-  // ─── logo carousel setup (5 visible at once) ─────────────────
-  const visibleCount = 5;
-  const totalLogos = testimonials.length;
-  // clone last 5 up front, first 5 at back
-  const logoSlides = [
-    ...testimonials.slice(-visibleCount),
-    ...testimonials,
-    ...testimonials.slice(0, visibleCount),
-  ];
-  const slideCount = logoSlides.length; // 15
-  const stepVW = 100 / visibleCount; // 20vw per logo
+  const [textStep, setTextStep] = useState(middleIndex);
+  const [logoStep, setLogoStep] = useState(middleIndex);
+  const [instant, setInstant] = useState(false);
+  const [durationMs, setDurationMs] = useState(NORMAL_DURATION);
+  const lastClick = useRef(Date.now());
 
-  // ─── state & refs ───────────────────────────────────────────
-  const [tIdx, setTIdx] = useState(1);
-  const [lIdx, setLIdx] = useState(visibleCount);
-  const [tMoving, setTMoving] = useState(true);
-  const [lMoving, setLMoving] = useState(true);
-
-  const tRef = useRef(null);
-  const lRef = useRef(null);
-
-  // ─── combined prev/next ─────────────────────────────────────
-  const prevAll = () => {
-    setTMoving(true);
-    setTIdx((i) => (i - 1 + textCount) % textCount);
-    setLMoving(true);
-    setLIdx((i) => (i - 1 + slideCount) % slideCount);
-  };
-  const nextAll = () => {
-    setTMoving(true);
-    setTIdx((i) => (i + 1) % textCount);
-    setLMoving(true);
-    setLIdx((i) => (i + 1) % slideCount);
-  };
-
-  // ─── snap text off clones ────────────────────────────────────
+  // Measure logo container
+  const logoContainerRef = useRef(null);
+  const textContainerRef = useRef(null);
+  const [logoContainerWidth, setLogoContainerWidth] = useState(0);
+  const [textContainerWidth, setTextContainerWidth] = useState(0);
   useEffect(() => {
-    const el = tRef.current;
-    if (!el) return;
-    const onEnd = () => {
-      if (tIdx === 0) {
-        setTMoving(false);
-        setTIdx(testimonials.length);
-      } else if (tIdx === textCount - 1) {
-        setTMoving(false);
-        setTIdx(1);
+    const measure = () => {
+      setLogoContainerWidth(logoContainerRef.current?.clientWidth || 0);
+      setTextContainerWidth(textContainerRef.current?.clientWidth || 0);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  // Reset when reaching end
+  useEffect(() => {
+    const reset = (step, setter, listLen) => {
+      if (step <= length || step >= listLen - length) {
+        const norm = ((step % length) + length) % length;
+        setInstant(true);
+        setter(middleIndex + norm);
       }
     };
-    el.addEventListener("transitionend", onEnd);
-    return () => el.removeEventListener("transitionend", onEnd);
-  }, [tIdx, textCount]);
+    reset(textStep, setTextStep, textList.length);
+    reset(logoStep, setLogoStep, logoList.length);
+  }, [
+    textStep,
+    logoStep,
+    length,
+    middleIndex,
+    textList.length,
+    logoList.length,
+  ]);
 
-  // ─── snap logos off clones ────────────────────────────────────
   useEffect(() => {
-    const el = lRef.current;
-    if (!el) return;
-    const onEnd = () => {
-      // if we've slid into the *front* cloned region (indexes 0…4)
-      if (lIdx < visibleCount) {
-        setLMoving(false);
-        // jump to the matching real block at the *end* (indexes 5…9)
-        setLIdx(totalLogos + lIdx);
-      }
-      // if we've slid into the *back* cloned region (indexes 10…14)
-      else if (lIdx >= totalLogos + visibleCount) {
-        setLMoving(false);
-        // jump to the matching real block at the *start* (indexes 5…9)
-        setLIdx(lIdx - totalLogos);
-      }
-    };
-    el.addEventListener("transitionend", onEnd);
-    return () => el.removeEventListener("transitionend", onEnd);
-  }, [lIdx, slideCount, totalLogos]);
+    if (instant) {
+      const id = setTimeout(() => setInstant(false), 50);
+      return () => clearTimeout(id);
+    }
+  }, [instant]);
 
-  // ─── transforms & classes ───────────────────────────────────
-  const tShift = `translateX(-${tIdx * 100}%)`;
-  const lShift = `translateX(-${lIdx * stepVW}vw)`;
-  const tClass = tMoving ? "transition-transform duration-700 ease-out" : "";
-  const lClass = lMoving ? "transition-transform duration-700 ease-out" : "";
+  const slideBoth = (delta, isClick = false) => {
+    let dur = NORMAL_DURATION;
+    if (isClick) {
+      const now = Date.now();
+      const dt = now - lastClick.current;
+      lastClick.current = now;
+      dur = dt < FAST_THRESHOLD ? FAST_DURATION : NORMAL_DURATION;
+    }
+    setDurationMs(dur);
+    setInstant(false);
+    setTextStep((s) => s + delta);
+    setLogoStep((s) => s + delta);
+  };
 
-  // ─── highlight center logo ──────────────────────────────────
-  // the logo that ends up in the middle of your 5‑wide viewport:
-  const centerOffset = Math.floor(visibleCount / 2); // =2
-  const realStart = lIdx - visibleCount;
-  const centerRealIdx = (realStart + centerOffset + totalLogos) % totalLogos;
+  const handlePrev = () => slideBoth(-1, true);
+  const handleNext = () => slideBoth(1, true);
+
+  const handleLogoClick = (idx) => {
+    const origIdx = idx % length;
+    const currentOrig = ((logoStep % length) + length) % length;
+    const diff = origIdx - currentOrig;
+    if (diff !== 0) slideBoth(diff, true);
+  };
+
+  // Logo drag logic
+  const logoDragStartX = useRef(0);
+  const [logoDragOffset, setLogoDragOffset] = useState(0);
+  const [logoDragging, setLogoDragging] = useState(false);
+
+  const onLogoDragStart = (e) => {
+    setLogoDragging(true);
+    logoDragStartX.current = e.touches?.[0].clientX ?? e.clientX;
+  };
+  const onLogoDragMove = (e) => {
+    if (!logoDragging) return;
+    e.preventDefault();
+    const x = e.touches?.[0].clientX ?? e.clientX;
+    setLogoDragOffset(x - logoDragStartX.current);
+  };
+  const onLogoDragEnd = () => {
+    if (!logoDragging) return setLogoDragging(false);
+    const logoWidth = logoContainerWidth / VISIBLE_LOGOS;
+    const steps = -Math.round(logoDragOffset / logoWidth);
+    if (steps) {
+      setDurationMs(NORMAL_DURATION);
+      setInstant(false);
+      setLogoStep((s) => s + steps);
+    }
+    setLogoDragOffset(0);
+    setLogoDragging(false);
+  };
+
+  // Text drag logic
+  const textDragStartX = useRef(0);
+  const [textDragOffset, setTextDragOffset] = useState(0);
+  const [textDragging, setTextDragging] = useState(false);
+
+  const onTextDragStart = (e) => {
+    setTextDragging(true);
+    textDragStartX.current = e.touches?.[0].clientX ?? e.clientX;
+  };
+  const onTextDragMove = (e) => {
+    if (!textDragging) return;
+    e.preventDefault();
+    const x = e.touches?.[0].clientX ?? e.clientX;
+    setTextDragOffset(x - textDragStartX.current);
+  };
+  const onTextDragEnd = () => {
+    if (!textDragging) return setTextDragging(false);
+    const stepWidth = textContainerWidth / 1; 
+    const steps = -Math.round(textDragOffset / stepWidth);
+    if (steps) {
+      setDurationMs(NORMAL_DURATION);
+      setInstant(false);
+      setTextStep((s) => s + steps);
+    }
+    setTextDragOffset(0);
+    setTextDragging(false);
+  };
+
+  const textPercent = 100 / textList.length;
+  const logoWidthPx = logoContainerWidth / VISIBLE_LOGOS;
+  const centerIndex = Math.floor(VISIBLE_LOGOS / 2);
 
   return (
-    <section className='w-full bg-[#f3f3f3]  border-b border-[#c1c1c1] h-100' style={{marginTop:'3rem'}}>
-      {/* TEXT CAROUSEL */}
+    <div className='flex flex-col items-center justify-center h-[50vh] bg-[#f3f3f3] border-b border-[#c1c1c1] space-y-8'>
       <div
-        className='relative w-full overflow-hidden'
-        style={{ paddingTop: "5rem" }}
+        className='flex items-center justify-center w-[50%] gap-[7rem]'
+        style={{ marginTop: "-4rem" }}
       >
-        <button
-          onClick={prevAll}
-          className='absolute left-4 top-1/2 -translate-y-1/2 text-3xl text-gray-500 hover:text-gray-700 z-10'
-        >
-          <GrPrevious />
+        <button onClick={handlePrev} className='p-4 opacity-30 cursor-pointer'>
+          <TfiAngleLeft size={30} />
         </button>
+
         <div
-          ref={tRef}
-          className={`flex w-[${textCount * 100}vw] ${tClass}`}
-          style={{ transform: tShift }}
+          ref={textContainerRef}
+          className='overflow-hidden w-2/3 mx-4 cursor-grab'
+          onMouseDown={onTextDragStart}
+          onTouchStart={onTextDragStart}
+          onMouseMove={onTextDragMove}
+          onTouchMove={onTextDragMove}
+          onMouseUp={onTextDragEnd}
+          onMouseLeave={onTextDragEnd}
+          onTouchEnd={onTextDragEnd}
+          style={{
+            cursor: textDragging ? "grabbing" : "grab",
+          }}
         >
-          {textSlides?.map(({ quote, author }, i) => (
-            <div
-              key={i}
-              className='w-[100vw] flex-shrink-0 flex flex-col items-center justify-center px-6 py-12'
-            >
-              <p className='italic text-2xl md:text-3xl text-[#1b2735] leading-relaxed text-center max-w-3xl'>
-                “{quote}”
-              </p>
-              <p className='mt-6 text-lg font-semibold text-[#1b2735]'>
-                {author}
-              </p>
-            </div>
-          ))}
+          <div
+            className='flex transition-transform ease-in-out'
+            style={{
+              width: `${textList.length * 100}%`,
+              transform: `translateX(calc(-${
+                textStep * textPercent
+              }% + ${textDragOffset}px))`,
+              transitionDuration:
+                textDragging || instant ? "0ms" : `${durationMs}ms`,
+            }}
+          >
+            {textList?.map((t, i) => (
+              <div
+                key={i}
+                className='flex-shrink-0 flex flex-col items-center justify-center h-48 px-4'
+                style={{ width: `${100 / textList.length}%` }}
+              >
+                <p className='text-2xl italic font-serif text-center'>
+                  “{t.quote}”
+                </p>
+                <p className='mt-2 text-xs text-gray-600 text-center'>
+                  {t.author}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
-        <button
-          onClick={nextAll}
-          className='absolute right-4 top-1/2 -translate-y-1/2 text-3xl text-gray-500 hover:text-gray-700 z-10'
-        >
-          <GrNext />
+
+        <button onClick={handleNext} className='p-4 opacity-30 cursor-pointer'>
+          <TfiAngleRight size={30} />
         </button>
       </div>
 
-      {/* LOGO CAROUSEL (5 VISIBLE) */}
-      <div className='relative w-full overflow-hidden mt-8'>
+      <div
+        ref={logoContainerRef}
+        className='overflow-hidden w-full'
+        onMouseDown={onLogoDragStart}
+        onTouchStart={onLogoDragStart}
+        onMouseMove={onLogoDragMove}
+        onTouchMove={onLogoDragMove}
+        onMouseUp={onLogoDragEnd}
+        onMouseLeave={onLogoDragEnd}
+        onTouchEnd={onLogoDragEnd}
+        style={{
+          cursor: logoDragging ? "grabbing" : "grab",
+          marginTop: "3rem",
+        }}
+      >
         <div
-          ref={lRef}
-          className={`flex ${lClass}`}
+          className='flex transition-transform ease-in-out'
           style={{
-            width: `${slideCount * stepVW}vw`,
-            transform: lShift,
+            transform: `translateX(${
+              -(logoStep - centerIndex) * logoWidthPx + logoDragOffset
+            }px)`,
+            transitionDuration:
+              logoDragging || instant ? "0ms" : `${durationMs}ms`,
           }}
         >
-          {logoSlides.map(({ logo, author }, i) => (
-            <div
-              key={i}
-              className='flex-shrink-0 flex justify-center'
-              style={{ width: `${stepVW}vw` }}
-            >
+          {logoList?.map((t, i) => {
+            const orig = i % length;
+            const currentOrig = ((logoStep % length) + length) % length;
+            const isActive = orig === currentOrig;
+
+            return (
               <div
-                className={
-                  i === (lIdx + centerOffset) % slideCount
-                    ? "grayscale-0 opacity-100"
-                    : "grayscale opacity-30"
-                }
+                key={i}
+                className={`flex-shrink-0 basis-[20%] p-2 flex justify-center items-center transition-opacity duration-300 ${
+                  isActive ? "opacity-100" : "opacity-30 grayscale"
+                }`}
               >
-                {logo}
+                {t.logo}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
-    </section>
+    </div>
   );
 }

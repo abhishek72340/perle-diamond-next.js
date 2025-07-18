@@ -1,146 +1,135 @@
 "use client";
-import { useRef, useLayoutEffect, useEffect } from "react";
-import {marks} from '../data/markCarousel';
+import { useRef, useEffect, useLayoutEffect } from "react";
+import { marks } from "../data/markCarousel";
+
 export default function MarksCarousel() {
   const containerRef = useRef(null);
 
-  //Infinite‑loop & correct centering
+  // Drag-to-scroll functionality
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    let isDragging = false;
+    let startX = 0;
+    let scrollStart = 0;
+
+    const onDown = (e) => {
+      isDragging = true;
+      container.classList.add("active");
+      startX = e.clientX - container.offsetLeft;
+      scrollStart = container.scrollLeft;
+    };
+
+    const onUp = () => {
+      isDragging = false;
+      container.classList.remove("active");
+    };
+
+    const onMove = (e) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      const x = e.clientX - container.offsetLeft;
+      container.scrollLeft = scrollStart - (x - startX);
+    };
+
+    container.addEventListener("pointerdown", onDown);
+    container.addEventListener("pointerup", onUp);
+    container.addEventListener("pointerleave", onUp);
+    container.addEventListener("pointermove", onMove);
+
+    return () => {
+      container.removeEventListener("pointerdown", onDown);
+      container.removeEventListener("pointerup", onUp);
+      container.removeEventListener("pointerleave", onUp);
+      container.removeEventListener("pointermove", onMove);
+    };
+  }, []);
+
+  // Clone items for seamless infinite scroll
   useLayoutEffect(() => {
-    const c = containerRef.current;
-    if (!c) return;
+    const container = containerRef.current;
+    if (!container || container.dataset.cloned === "true") return;
 
-    // 1. Clone once
-    if (!c.dataset.cloned) {
-      Array.from(c.children).forEach((child) => c.appendChild(child.cloneNode(true)));
-      c.dataset.cloned = "true";
-    }
+    const children = Array.from(container.children);
+    children.forEach((child) => container.insertBefore(child.cloneNode(true), container.firstChild));
+    children.forEach((child) => container.appendChild(child.cloneNode(true)));
 
-    // 2. Compute the true scrollable width
-    const scrollable = c.scrollWidth - c.clientWidth;
-    // 3. Center ON that scrollable area
-    c.scrollLeft = scrollable / 2;
+    container.dataset.cloned = "true";
+    const singleSetWidth = container.scrollWidth / 3;
+    container.scrollLeft = singleSetWidth;
 
     let ticking = false;
+
     const onScroll = () => {
       if (ticking) return;
       ticking = true;
-      window.requestAnimationFrame(() => {
-        // wrap only at the edges of the scrollable area
-        if (c.scrollLeft <= 0) {
-          c.scrollLeft += scrollable;
-        } else if (c.scrollLeft >= scrollable) {
-          c.scrollLeft -= scrollable;
+
+      requestAnimationFrame(() => {
+        const scrollWidth = container.scrollWidth;
+        const singleSet = scrollWidth / 3;
+
+        if (container.scrollLeft <= 0) {
+          container.scrollLeft += singleSet;
+        } else if (container.scrollLeft >= singleSet * 2) {
+          container.scrollLeft -= singleSet;
         }
+
         ticking = false;
       });
     };
 
-    c.addEventListener("scroll", onScroll, { passive: true });
-    return () => c.removeEventListener("scroll", onScroll);
+    container.addEventListener("scroll", onScroll, { passive: true });
+    return () => container.removeEventListener("scroll", onScroll);
   }, []);
 
-  // 2️⃣ Pointer‑drag (no changes)
-  useEffect(() => {
-    const c = containerRef.current;
-    if (!c) return;
-    let isDown = false, startX = 0, scrollStart = 0;
-
-    const onDown = (e) => {
-      isDown = true; c.classList.add("active");
-      startX = e.clientX - c.offsetLeft;
-      scrollStart = c.scrollLeft;
-    };
-    const onUp = () => {
-      isDown = false; c.classList.remove("active");
-    };
-    const onMove = (e) => {
-      if (!isDown) return;
-      e.preventDefault();
-      c.scrollLeft = scrollStart - (e.clientX - c.offsetLeft - startX);
-    };
-
-    c.addEventListener("pointerdown", onDown);
-    c.addEventListener("pointerup", onUp);
-    c.addEventListener("pointerleave", onUp);
-    c.addEventListener("pointermove", onMove);
-    return () => {
-      c.removeEventListener("pointerdown", onDown);
-      c.removeEventListener("pointerup", onUp);
-      c.removeEventListener("pointerleave", onUp);
-      c.removeEventListener("pointermove", onMove);
-    };
-  }, []);
-
-  // 3️⃣ Wheel/trackpad flick (no changes)
-  useEffect(() => {
-    const c = containerRef.current;
-    if (!c) return;
-
-    const onWheel = (e) => {
-      e.preventDefault();
-      const delta = e.deltaX || e.deltaY;
-      c.scrollLeft += delta;
-    };
-
-    c.addEventListener("wheel", onWheel, { passive: false });
-    return () => c.removeEventListener("wheel", onWheel);
-  }, []);
-
-  // 4️⃣ Render with quarter‑card peeks + fades
   return (
-    <div style={{ position: "relative", overflow: "hidden",padding:'5%' }}>
-      {/* LEFT FADE */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          bottom: 0,
-          left: 0,
-          width: "8.3333%",
-          background: "linear-gradient(to right, #f3f3f3, transparent)",
-          pointerEvents: "none",
-          zIndex: 10,
-          
-        }}
-      />
-      {/* RIGHT FADE */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          bottom: 0,
-          right: 0,
-          width: "8.3333%",
-          background: "linear-gradient(to left, #f3f3f3, transparent)",
-          pointerEvents: "none",
-          zIndex: 10,
-        }}
-      />
-
+    <section
+      role="region"
+      aria-label="Carousel of brand highlights"
+      className="relative overflow-hidden my-[6%] mx-[5%]"
+      style={{ margin: "6% 5% 5% 2%" }}
+    >
       <div
         ref={containerRef}
-        className="flex overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing select-none"
+        role="list"
+        aria-live="off"
+        className="flex gap-[3rem] items-start whitespace-nowrap select-none overflow-x-auto"
         style={{
-          paddingLeft: "8.3333%",
-          paddingRight: "8.3333%",
-          scrollBehavior: "auto",
+          padding: "1px",
+          cursor: "grab",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
         }}
       >
-        {marks?.map(({ Icon, title, description }, idx) => (
-          <div key={idx} className="flex-none w-full sm:w-1/2 lg:w-1/3 p-4">
-            <div className="bg-white rounded-lg shadow p-6 flex items-center gap-4 h-full">
-              {Icon}
-              <div className="flex flex-col gap-1">
-                <h3 className="text-xs font-semibold">{title}</h3>
-                <p className="text-xs">{description}</p>
-                <a href="#" className="mt-2 inline-block text-xs underline">
-                  Learn More
-                </a>
-              </div>
+        {marks?.map((mark, idx) => (
+          <div
+            key={idx}
+            role="listitem"
+            tabIndex={0}
+            aria-roledescription="slide"
+            aria-label={`${mark.title}: ${mark.description}`}
+            className="inline-flex gap-4 items-center flex-shrink-0 mx-[5px] my-[10px] focus:outline-none"
+          >
+            <div className="mb-4">{mark.Icon}</div>
+            <div className="flex flex-col gap-1 text-xs">
+              <h3 className="font-semibold m-0">{mark.title}</h3>
+              <p className="text-dark m-0">{mark.description}</p>
+              <a
+                href="#"
+                className="underline font-medium"
+                aria-label={`Learn more about ${mark.title}`}
+              >
+                Learn More
+              </a>
             </div>
           </div>
         ))}
       </div>
-    </div>
+
+      {/* Left and right fade edges */}
+      <div className="absolute inset-y-0 left-0 w-[80px] pointer-events-none bg-gradient-to-r from-white to-transparent" />
+      <div className="absolute inset-y-0 right-0 w-[80px] pointer-events-none bg-gradient-to-l from-white to-transparent" />
+    </section>
   );
 }
