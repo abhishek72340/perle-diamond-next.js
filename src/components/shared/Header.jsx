@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
 import { CiMenuBurger, CiSearch } from "react-icons/ci";
 import { PiBagSimpleThin } from "react-icons/pi";
 import NavLinks from "./Navlinks";

@@ -122,7 +122,7 @@ export default function Footer() {
       </div>
 
       {/* bottom copyright row */}
-      <div className='w-full px-8 pb-6 text-xs font-medium text-dark my-[5rem]'>
+      <div className='w-full px-8 pb-6 text-xs font-medium text-dark'>
         ©2025 Serge DeNimes. All Rights Reserved.
       </div>
     </footer>
