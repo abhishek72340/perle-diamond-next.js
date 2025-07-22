@@ -1,4 +1,7 @@
 @import "tailwindcss";
+html, body {
+  overflow-x: hidden;
+}
 
 .no-scrollbar {
   scrollbar-width: none; 
@@ -7,3 +10,4 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none; 
 }
+
