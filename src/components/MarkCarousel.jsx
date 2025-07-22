@@ -16,14 +16,12 @@ export default function MarksCarousel() {
 
     const onDown = (e) => {
       isDragging = true;
-      container.classList.add("active");
       startX = e.clientX - container.offsetLeft;
       scrollStart = container.scrollLeft;
     };
 
     const onUp = () => {
       isDragging = false;
-      container.classList.remove("active");
     };
 
     const onMove = (e) => {

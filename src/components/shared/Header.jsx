@@ -36,7 +36,7 @@ export default function HeroWithHeader() {
   }, []);
 
   return (
-    <section className='relative w-full h-screen '>
+    <section className='relative h-screen '>
       <header
         ref={headerRef}
         className={`
@@ -49,6 +49,7 @@ export default function HeroWithHeader() {
               : "bg-transparent text-white"
           }
         `}
+        
     
       >
         <div className='flex items-center justify-between'>
